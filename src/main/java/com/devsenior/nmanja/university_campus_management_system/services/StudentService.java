@@ -13,6 +13,8 @@ public interface StudentService {
     //Obtener estudiante por ID
     StudentResponse getStudentById(Long id);
 
+    StudentResponse createStudent(StudentRequest student);
+
     //Actualizar informacion de estudiante
     StudentResponse updateStudent(Long id, StudentRequest student);
 
