@@ -4,7 +4,7 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
-import com.devsenior.nmanja.mappers.StudentMapper;
+import com.devsenior.nmanja.university_campus_management_system.mappers.StudentMapper;
 import com.devsenior.nmanja.university_campus_management_system.model.dto.StudentRequest;
 import com.devsenior.nmanja.university_campus_management_system.model.dto.StudentResponse;
 import com.devsenior.nmanja.university_campus_management_system.repositories.StudentRepository;
