@@ -25,6 +25,9 @@ public class Course {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false)
+    private String courseName;
+
     @Column(unique = true, nullable = false)
     private String courseCode;
 
