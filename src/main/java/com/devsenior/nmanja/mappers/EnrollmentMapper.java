@@ -12,7 +12,7 @@ import com.devsenior.nmanja.university_campus_management_system.model.summaries.
 @Mapper(componentModel = "spring", uses = {CourseMapper.class, StudentMapper.class})
 public interface EnrollmentMapper {
 
-    EnrollmentMapper INSTANCE = Mappers.getMapper(EnrollmentMapper.class);
+/*     EnrollmentMapper INSTANCE = Mappers.getMapper(EnrollmentMapper.class); */
     
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "inscriptionDate", ignore = true)

@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
+import com.devsenior.nmanja.mappers.StudentMapper;
 import com.devsenior.nmanja.university_campus_management_system.model.dto.StudentRequest;
 import com.devsenior.nmanja.university_campus_management_system.model.dto.StudentResponse;
 import com.devsenior.nmanja.university_campus_management_system.repositories.StudentRepository;
@@ -16,14 +17,16 @@ import lombok.RequiredArgsConstructor;
 public class StudentServiceImpl implements StudentService{
 
     private final StudentRepository studentRepository;
+    private final StudentMapper studentMapper;
 
     @Override
     public List<StudentResponse> getAllStudents() {
-        var student = studentRepository.findAll();
 
-        
-        return null
-            ;
+        var student = studentRepository.findAll().stream()
+            .map(s -> studentMapper.toResponse(s))
+            .toList();
+
+        return student;
     }
 
     @Override

@@ -13,7 +13,7 @@ import com.devsenior.nmanja.university_campus_management_system.model.summaries.
 public interface CourseMapper {
     
 
-    CourseMapper INSTANCE = Mappers.getMapper(CourseMapper.class);
+/*     CourseMapper INSTANCE = Mappers.getMapper(CourseMapper.class); */
 
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "professor", ignore = true)

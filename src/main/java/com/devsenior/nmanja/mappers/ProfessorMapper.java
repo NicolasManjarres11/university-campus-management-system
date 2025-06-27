@@ -12,7 +12,7 @@ import com.devsenior.nmanja.university_campus_management_system.model.summaries.
 @Mapper(componentModel = "spring", uses = {CourseMapper.class})
 public interface ProfessorMapper {
 
-    ProfessorMapper INSTANCE = Mappers.getMapper(ProfessorMapper.class);
+/*     ProfessorMapper INSTANCE = Mappers.getMapper(ProfessorMapper.class); */
 
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "courses", ignore = true)
