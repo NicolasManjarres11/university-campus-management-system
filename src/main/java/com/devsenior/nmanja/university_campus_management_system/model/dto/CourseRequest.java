@@ -6,6 +6,9 @@ import jakarta.validation.constraints.NotNull;
 
 public record CourseRequest(
 
+    @NotBlank(message = "El nombre del curso es obligatorio")
+    String courseName, 
+
     @NotBlank(message = "El código del curso es obligatorio")
     String courseCode,
 
