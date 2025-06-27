@@ -1,4 +1,4 @@
-package com.devsenior.nmanja.university_campus_management_system.model.dto;
+package com.devsenior.nmanja.university_campus_management_system.model.dto.enrollment;
 
 public record StudentSummary(
 
