@@ -89,10 +89,14 @@ public class StudentServiceImpl implements StudentService{
         var entityOptional = studentRepository.findById(id)
         .orElseThrow(() -> new StudentNotFoundException(id));
 
+
         studentRepository.deleteById(id);
 
         return studentMapper.toResponse(entityOptional);
     }
+
+    
+    
 
 
     
