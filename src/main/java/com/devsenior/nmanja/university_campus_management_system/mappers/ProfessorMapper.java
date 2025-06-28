@@ -22,5 +22,7 @@ public interface ProfessorMapper {
     ProfessorResponse toResponse(Professor professor);
 
     ProfessorSummary toSummary(Professor professor);
+
+    ProfessorSummary toSummaryFromResponse(ProfessorResponse professor);
     
 }

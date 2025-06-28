@@ -4,17 +4,17 @@ import java.util.List;
 
 import com.devsenior.nmanja.university_campus_management_system.model.dto.CourseRequest;
 import com.devsenior.nmanja.university_campus_management_system.model.dto.CourseResponse;
-import com.devsenior.nmanja.university_campus_management_system.model.entities.Course;
+import com.devsenior.nmanja.university_campus_management_system.model.dto.CourseUpdateRequest;
 
 public interface CourseService {
 
-    List<Course> getAllCourses();
+    List<CourseResponse> getAllCourses();
 
     CourseResponse getCourseById(Long id);
 
     CourseResponse createCourse(CourseRequest course);
 
-    CourseResponse updateCourse(Long id, CourseRequest course);
+    CourseResponse updateCourse(Long id, CourseUpdateRequest course);
 
     CourseResponse deleteCourse(Long id);
     
