@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.devsenior.nmanja.university_campus_management_system.model.dto.StudentRequest;
 import com.devsenior.nmanja.university_campus_management_system.model.dto.StudentResponse;
+import com.devsenior.nmanja.university_campus_management_system.model.dto.StudentUpdateRequest;
 
 public interface StudentService {
 
@@ -16,7 +17,7 @@ public interface StudentService {
     StudentResponse createStudent(StudentRequest student);
 
     //Actualizar informacion de estudiante
-    StudentResponse updateStudent(Long id, StudentRequest student);
+    StudentResponse updateStudent(Long id, StudentUpdateRequest student);
 
     //Eliminar estudiante
     StudentResponse deleteStudent(Long id);

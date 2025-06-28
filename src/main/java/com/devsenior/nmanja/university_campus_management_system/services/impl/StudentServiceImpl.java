@@ -7,9 +7,11 @@ import org.springframework.stereotype.Service;
 
 import com.devsenior.nmanja.university_campus_management_system.exceptions.StudentNotFoundException;
 import com.devsenior.nmanja.university_campus_management_system.exceptions.StudentsNotExistException;
+import com.devsenior.nmanja.university_campus_management_system.helper.UpdateHelper;
 import com.devsenior.nmanja.university_campus_management_system.mappers.StudentMapper;
 import com.devsenior.nmanja.university_campus_management_system.model.dto.StudentRequest;
 import com.devsenior.nmanja.university_campus_management_system.model.dto.StudentResponse;
+import com.devsenior.nmanja.university_campus_management_system.model.dto.StudentUpdateRequest;
 import com.devsenior.nmanja.university_campus_management_system.repositories.StudentRepository;
 import com.devsenior.nmanja.university_campus_management_system.services.StudentService;
 
@@ -66,16 +68,30 @@ public class StudentServiceImpl implements StudentService{
         return studentMapper.toResponse(entity);
     }
 
+    //Actualizar un estudiante
     @Override
-    public StudentResponse updateStudent(Long id, StudentRequest student) {
-        // TODO Auto-generated method stub
-        return null;
+    public StudentResponse updateStudent(Long id, StudentUpdateRequest student) {
+        var entityOptional = studentRepository.findById(id)
+        .orElseThrow(() -> new StudentNotFoundException(id));
+
+        UpdateHelper.updateIfNotNull(entityOptional, student);
+
+        var updateEntity = studentRepository.save(entityOptional);
+
+
+        return studentMapper.toResponse(updateEntity);
     }
 
+
+    //Eliminar un estudiante
     @Override
     public StudentResponse deleteStudent(Long id) {
-        // TODO Auto-generated method stub
-        return null;
+        var entityOptional = studentRepository.findById(id)
+        .orElseThrow(() -> new StudentNotFoundException(id));
+
+        studentRepository.deleteById(id);
+
+        return studentMapper.toResponse(entityOptional);
     }
 
 

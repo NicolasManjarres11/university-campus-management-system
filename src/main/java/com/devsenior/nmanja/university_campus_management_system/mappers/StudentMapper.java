@@ -6,6 +6,7 @@ import org.mapstruct.factory.Mappers;
 
 import com.devsenior.nmanja.university_campus_management_system.model.dto.StudentRequest;
 import com.devsenior.nmanja.university_campus_management_system.model.dto.StudentResponse;
+import com.devsenior.nmanja.university_campus_management_system.model.dto.StudentUpdateRequest;
 import com.devsenior.nmanja.university_campus_management_system.model.entities.Student;
 import com.devsenior.nmanja.university_campus_management_system.model.summaries.StudentSummary;
 
@@ -18,6 +19,7 @@ public interface StudentMapper {
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "enrollments", ignore = true)
     Student toEntity(StudentRequest student);
+
 
     @Mapping(target = "enrollments", source = "enrollments")
     StudentResponse toResponse(Student student);
