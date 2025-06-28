@@ -5,8 +5,8 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
-import com.devsenior.nmanja.university_campus_management_system.exceptions.StudentNotFoundException;
-import com.devsenior.nmanja.university_campus_management_system.exceptions.StudentsNotExistException;
+import com.devsenior.nmanja.university_campus_management_system.exceptions.EntityNotFoundException;
+import com.devsenior.nmanja.university_campus_management_system.exceptions.EntityNotExistException;
 import com.devsenior.nmanja.university_campus_management_system.helper.UpdateHelper;
 import com.devsenior.nmanja.university_campus_management_system.mappers.StudentMapper;
 import com.devsenior.nmanja.university_campus_management_system.model.dto.StudentRequest;
@@ -32,7 +32,7 @@ public class StudentServiceImpl implements StudentService{
         var entity = studentRepository.findAll();
 
         if(entity.isEmpty()){
-            throw new StudentsNotExistException();
+            throw new EntityNotExistException("estudiantes");
         }
 
         var response = entity.stream()
@@ -48,10 +48,9 @@ public class StudentServiceImpl implements StudentService{
     public StudentResponse getStudentById(Long id) {
 
         var student = studentRepository.findById(id)
-            .map(s -> studentMapper.toResponse(s))
-            .orElseThrow(() -> new StudentNotFoundException(id));
+            .orElseThrow(() -> new EntityNotFoundException(id,"estudiante"));
         
-        return student;
+        return studentMapper.toResponse(student);
     }
 
     //Registrar un nuevo estudiante
@@ -72,7 +71,7 @@ public class StudentServiceImpl implements StudentService{
     @Override
     public StudentResponse updateStudent(Long id, StudentUpdateRequest student) {
         var entityOptional = studentRepository.findById(id)
-        .orElseThrow(() -> new StudentNotFoundException(id));
+        .orElseThrow(() -> new EntityNotFoundException(id,"estudiante"));
 
         UpdateHelper.updateIfNotNull(entityOptional, student);
 
@@ -87,7 +86,7 @@ public class StudentServiceImpl implements StudentService{
     @Override
     public StudentResponse deleteStudent(Long id) {
         var entityOptional = studentRepository.findById(id)
-        .orElseThrow(() -> new StudentNotFoundException(id));
+        .orElseThrow(() -> new EntityNotFoundException(id,"estudiante"));
 
 
         studentRepository.deleteById(id);

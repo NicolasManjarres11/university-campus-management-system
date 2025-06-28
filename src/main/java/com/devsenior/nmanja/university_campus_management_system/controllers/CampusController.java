@@ -5,9 +5,13 @@ import java.util.List;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.devsenior.nmanja.university_campus_management_system.model.dto.ProfessorRequest;
+import com.devsenior.nmanja.university_campus_management_system.model.dto.ProfessorResponse;
+import com.devsenior.nmanja.university_campus_management_system.model.dto.ProfessorUpdateRequest;
 import com.devsenior.nmanja.university_campus_management_system.model.dto.StudentRequest;
 import com.devsenior.nmanja.university_campus_management_system.model.dto.StudentResponse;
 import com.devsenior.nmanja.university_campus_management_system.model.dto.StudentUpdateRequest;
+import com.devsenior.nmanja.university_campus_management_system.services.ProfessorService;
 import com.devsenior.nmanja.university_campus_management_system.services.StudentService;
 
 import jakarta.validation.Valid;
@@ -27,11 +31,12 @@ import org.springframework.web.bind.annotation.PutMapping;
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/campus")
-/* @RequiredArgsConstructor */
 public class CampusController {
 
     private final StudentService studentService;
+    private final ProfessorService professorService;
 
+    //Estudiantes
 
     //Obtener todos los estudiantes
     @GetMapping("/students")
@@ -64,6 +69,47 @@ public class CampusController {
         return studentService.deleteStudent(id);
     }
     
+
+
+    //Profesores
+
+    //Obtener todos los profesores
+
+    @GetMapping("/professors")
+    public List<ProfessorResponse> getAllProfessors() {
+        return professorService.getAllProfessors();
+    }
+
+    //Obtener profesor por ID
+
+    @GetMapping("/professors/{id}")
+    public ProfessorResponse getProfessorById(@PathVariable Long id) {
+        return professorService.getProffesorById(id);
+    }
+
+    //Crear profesor
+    @PostMapping("/professors")
+    public ProfessorResponse createProfessor(@Valid @RequestBody ProfessorRequest professor) {
+
+        return professorService.createProfessor(professor);
+    }
+
+    //Actualizar profesor
+    @PutMapping("/professors/{id}")
+    public ProfessorResponse updateProfessor(@PathVariable Long id, @Valid @RequestBody ProfessorUpdateRequest professor) {
+        
+        return professorService.updateProfessor(id, professor);
+    }
+
+    //Eliminar profesor
+    @DeleteMapping("/professors/{id}")
+    public ProfessorResponse deleteProfessor(@PathVariable Long id){
+        return professorService.deleteProfessor(id);
+    }
+    
+    
+    
+
     
     
 }
