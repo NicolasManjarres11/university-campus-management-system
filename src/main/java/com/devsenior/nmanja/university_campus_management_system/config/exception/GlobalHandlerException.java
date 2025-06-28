@@ -49,7 +49,7 @@ public class GlobalHandlerException {
             ex.getMessage(), 
             request.getRequestURI());
 
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
     }
 
     //Datos duplicados

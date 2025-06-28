@@ -5,12 +5,15 @@ import java.util.List;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.devsenior.nmanja.university_campus_management_system.model.dto.CourseRequest;
+import com.devsenior.nmanja.university_campus_management_system.model.dto.CourseResponse;
 import com.devsenior.nmanja.university_campus_management_system.model.dto.ProfessorRequest;
 import com.devsenior.nmanja.university_campus_management_system.model.dto.ProfessorResponse;
 import com.devsenior.nmanja.university_campus_management_system.model.dto.ProfessorUpdateRequest;
 import com.devsenior.nmanja.university_campus_management_system.model.dto.StudentRequest;
 import com.devsenior.nmanja.university_campus_management_system.model.dto.StudentResponse;
 import com.devsenior.nmanja.university_campus_management_system.model.dto.StudentUpdateRequest;
+import com.devsenior.nmanja.university_campus_management_system.services.CourseService;
 import com.devsenior.nmanja.university_campus_management_system.services.ProfessorService;
 import com.devsenior.nmanja.university_campus_management_system.services.StudentService;
 
@@ -35,6 +38,7 @@ public class CampusController {
 
     private final StudentService studentService;
     private final ProfessorService professorService;
+    private final CourseService courseService;
 
     //Estudiantes
 
@@ -84,7 +88,7 @@ public class CampusController {
 
     @GetMapping("/professors/{id}")
     public ProfessorResponse getProfessorById(@PathVariable Long id) {
-        return professorService.getProffesorById(id);
+        return professorService.getProfessorById(id);
     }
 
     //Crear profesor
@@ -108,6 +112,31 @@ public class CampusController {
     }
     
     
+    //Cursos
+
+    //Obtener todos los cursos
+    @GetMapping("/courses")
+    public List<CourseResponse> getAllCourses() {
+        return courseService.getAllCourses();
+    }
+
+    //Obtener curso por ID
+    @GetMapping("/courses/{id}")
+    public CourseResponse getCourseById(@PathVariable Long id) {
+        return courseService.getCourseById(id);
+    }
+
+    //Crear un curso
+    @PostMapping("/courses")
+    public CourseResponse createCourse(@Valid @RequestBody CourseRequest course) {
+        return courseService.createCourse(course);
+    }
+    
+    //Borrar un curso
+    @DeleteMapping("/courses/{id}")
+    public CourseResponse deleteCourse(@PathVariable Long id){
+        return courseService.deleteCourse(id);
+    }
     
 
     
