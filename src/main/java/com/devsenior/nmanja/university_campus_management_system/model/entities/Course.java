@@ -37,6 +37,9 @@ public class Course {
     @Column(nullable = false)
     private Integer maxStudents;
 
+    @Column(columnDefinition = "INTEGER DEFAULT 0")
+    private Integer studentsInCourse;
+
     //Relacion de muchos a uno con la tabla professors
     //Varios cursos pueden ser dictados por un profesor
 

@@ -18,6 +18,7 @@ public interface CourseMapper {
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "professor", ignore = true)
     @Mapping(target = "enrollments", ignore = true)
+    @Mapping(target = "studentsInCourse", ignore = true)
     Course toEntity(CourseRequest course);
 
     @Mapping(target = "professor", source = "professor")

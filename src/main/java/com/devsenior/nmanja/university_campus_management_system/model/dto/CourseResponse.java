@@ -10,12 +10,11 @@ String courseName,
 
 String courseCode,
 
-
 String description,
-
 
 Integer maxStudents,
 
+Integer studentsInCourse,
 
 ProfessorSummary professor
 

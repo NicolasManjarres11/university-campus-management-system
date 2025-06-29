@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import com.devsenior.nmanja.university_campus_management_system.exceptions.EntityNotFoundException;
+import com.devsenior.nmanja.university_campus_management_system.exceptions.CourseFullException;
 import com.devsenior.nmanja.university_campus_management_system.exceptions.EntityNotExistException;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -38,6 +39,19 @@ public class GlobalHandlerException {
             request.getRequestURI());
 
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
+    }
+
+    //El curso ya está lleno
+    @ExceptionHandler(CourseFullException.class)
+    public ResponseEntity<ApiErrorResponse> handleCourseFullException(CourseFullException ex, HttpServletRequest request){
+
+        var errorResponse = new ApiErrorResponse(
+            HttpStatus.CONFLICT, 
+            ex.getMessage(), 
+            request.getRequestURI());
+
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(errorResponse);
+
     }
     
     //Formato invalido
