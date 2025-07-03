@@ -10,6 +10,7 @@ import com.devsenior.nmanja.university_campus_management_system.model.dto.Course
 import com.devsenior.nmanja.university_campus_management_system.model.dto.CourseUpdateRequest;
 import com.devsenior.nmanja.university_campus_management_system.model.dto.EnrollmentRequest;
 import com.devsenior.nmanja.university_campus_management_system.model.dto.EnrollmentResponse;
+import com.devsenior.nmanja.university_campus_management_system.model.dto.EnrollmentUpdateRequest;
 import com.devsenior.nmanja.university_campus_management_system.model.dto.ProfessorRequest;
 import com.devsenior.nmanja.university_campus_management_system.model.dto.ProfessorResponse;
 import com.devsenior.nmanja.university_campus_management_system.model.dto.ProfessorUpdateRequest;
@@ -170,7 +171,18 @@ public class CampusController {
         return enrollmentService.createEnrollment(enrollment);
     }
     
+    //Actualizar estado de inscripción
+    @PutMapping("/enrollments/{id}")
+    public EnrollmentResponse updateEnrollment(@PathVariable Long id,@Valid @RequestBody EnrollmentUpdateRequest status) {
+        
+        return enrollmentService.updateEnrollment(id, status);
+    }
 
+    //Cancelar inscripción
+    @DeleteMapping("/enrollments/{id}")
+    public EnrollmentResponse cancelEnrollment(@PathVariable Long id){
+        return enrollmentService.cancelEnrollment(id);
+    }
     
 }
     

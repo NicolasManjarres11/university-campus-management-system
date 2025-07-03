@@ -14,7 +14,7 @@ public interface EnrollmentService {
 
     EnrollmentResponse createEnrollment(EnrollmentRequest enrollment);
 
-    EnrollmentResponse updateEnrollment(EnrollmentUpdateRequest enrollment);
+    EnrollmentResponse updateEnrollment(Long id, EnrollmentUpdateRequest enrollment);
 
     EnrollmentResponse cancelEnrollment(Long id);
 

@@ -4,9 +4,11 @@ import java.time.LocalDate;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.devsenior.nmanja.university_campus_management_system.exceptions.EntityNotExistException;
 import com.devsenior.nmanja.university_campus_management_system.exceptions.EntityNotFoundException;
+import com.devsenior.nmanja.university_campus_management_system.exceptions.StatusNotValidException;
 import com.devsenior.nmanja.university_campus_management_system.exceptions.StudentAlreadyEnrolled;
 import com.devsenior.nmanja.university_campus_management_system.mappers.EnrollmentMapper;
 import com.devsenior.nmanja.university_campus_management_system.model.dto.EnrollmentRequest;
@@ -58,6 +60,7 @@ public class EnrollmentServiceImpl implements EnrollmentService{
         return enrollmentMapper.toResponse(entityOptional);
     }
 
+    @Transactional
     @Override
     public EnrollmentResponse createEnrollment(EnrollmentRequest enrollment) {
         
@@ -85,16 +88,74 @@ public class EnrollmentServiceImpl implements EnrollmentService{
         return enrollmentMapper.toResponse(entity);
     }
 
+    @Transactional
     @Override
-    public EnrollmentResponse updateEnrollment(EnrollmentUpdateRequest enrollment) {
-        // TODO Auto-generated method stub
-        return null;
+    public EnrollmentResponse updateEnrollment(Long id, EnrollmentUpdateRequest enrollment) {
+
+        var entityOptional = enrollmentRepository.findById(id).
+                            orElseThrow(() -> new EntityNotFoundException(id, "inscripción"));
+        //Guardamos el nuevo estado
+        EnrollmentStatus newStatus;
+
+        try {
+            newStatus = EnrollmentStatus.valueOf(enrollment.status());
+        } catch (IllegalArgumentException e) {
+            throw new StatusNotValidException(enrollment.status());
+        }
+
+        //El viejo estado lo obtenemos para validar
+        var oldStatus = entityOptional.getStatus();
+
+
+        //Si el usuario actualiza con el estado ACTIVO a un curso que ya está ACTIVO, lo mismo con los demás estados
+
+        if(newStatus == oldStatus){
+            return enrollmentMapper.toResponse(entityOptional);
+        }
+
+
+        if(oldStatus == EnrollmentStatus.ACTIVO && newStatus != EnrollmentStatus.ACTIVO){
+            courseService.decrementStudentsInCourse(entityOptional.getCourse().getId());
+        } else if (oldStatus != EnrollmentStatus.ACTIVO && newStatus == EnrollmentStatus.ACTIVO){
+            courseService.incrementStudentsInCourse(entityOptional.getCourse().getId());
+        }
+
+        entityOptional.setStatus(newStatus);
+        
+        var updateEntity = enrollmentRepository.save(entityOptional);
+
+
+
+        return enrollmentMapper.toResponse(updateEntity);
     }
 
+
+    @Transactional
     @Override
     public EnrollmentResponse cancelEnrollment(Long id) {
-        // TODO Auto-generated method stub
-        return null;
+        
+        var entityOptional = enrollmentRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException(id, "inscripción"));
+
+        var oldStatus = entityOptional.getStatus();
+
+        if(oldStatus == EnrollmentStatus.RETIRADO){
+            return enrollmentMapper.toResponse(entityOptional);
+        }
+
+        if(oldStatus == EnrollmentStatus.COMPLETADO){
+            throw new StatusNotValidException(id);
+        }
+
+        if(oldStatus == EnrollmentStatus.ACTIVO){
+            courseService.decrementStudentsInCourse(entityOptional.getCourse().getId());
+        } 
+
+        entityOptional.setStatus(EnrollmentStatus.RETIRADO);
+
+        var updatedEntity = enrollmentRepository.save(entityOptional);
+        
+        return enrollmentMapper.toResponse(updatedEntity);
     }
     
 }

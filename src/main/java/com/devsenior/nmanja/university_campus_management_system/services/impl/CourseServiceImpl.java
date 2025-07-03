@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 
 import com.devsenior.nmanja.university_campus_management_system.exceptions.CourseFullException;
+import com.devsenior.nmanja.university_campus_management_system.exceptions.CourseWithoutStudentsException;
 import com.devsenior.nmanja.university_campus_management_system.exceptions.EntityNotExistException;
 import com.devsenior.nmanja.university_campus_management_system.exceptions.EntityNotFoundException;
 import com.devsenior.nmanja.university_campus_management_system.helper.UpdateHelper;
@@ -122,7 +123,16 @@ public class CourseServiceImpl implements CourseService{
 
     @Override
     public void decrementStudentsInCourse(Long id) {
-        // TODO Auto-generated method stub
+        var course = courseRepository.findById(id)
+        .orElseThrow(() -> new EntityNotFoundException(id, "curso"));
+
+        if(course.getStudentsInCourse() <= 0){
+            throw new CourseWithoutStudentsException(id);
+        }
+
+        course.setStudentsInCourse(course.getStudentsInCourse() - 1);
+
+        courseRepository.save(course);
         
     }
 
