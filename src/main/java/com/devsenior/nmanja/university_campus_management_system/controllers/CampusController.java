@@ -7,6 +7,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.devsenior.nmanja.university_campus_management_system.model.dto.CourseRequest;
 import com.devsenior.nmanja.university_campus_management_system.model.dto.CourseResponse;
+import com.devsenior.nmanja.university_campus_management_system.model.dto.CourseUpdateRequest;
+import com.devsenior.nmanja.university_campus_management_system.model.dto.EnrollmentRequest;
+import com.devsenior.nmanja.university_campus_management_system.model.dto.EnrollmentResponse;
+import com.devsenior.nmanja.university_campus_management_system.model.dto.EnrollmentUpdateRequest;
 import com.devsenior.nmanja.university_campus_management_system.model.dto.ProfessorRequest;
 import com.devsenior.nmanja.university_campus_management_system.model.dto.ProfessorResponse;
 import com.devsenior.nmanja.university_campus_management_system.model.dto.ProfessorUpdateRequest;
@@ -14,6 +18,7 @@ import com.devsenior.nmanja.university_campus_management_system.model.dto.Studen
 import com.devsenior.nmanja.university_campus_management_system.model.dto.StudentResponse;
 import com.devsenior.nmanja.university_campus_management_system.model.dto.StudentUpdateRequest;
 import com.devsenior.nmanja.university_campus_management_system.services.CourseService;
+import com.devsenior.nmanja.university_campus_management_system.services.EnrollmentService;
 import com.devsenior.nmanja.university_campus_management_system.services.ProfessorService;
 import com.devsenior.nmanja.university_campus_management_system.services.StudentService;
 
@@ -39,6 +44,7 @@ public class CampusController {
     private final StudentService studentService;
     private final ProfessorService professorService;
     private final CourseService courseService;
+    private final EnrollmentService enrollmentService;
 
     //Estudiantes
 
@@ -131,6 +137,12 @@ public class CampusController {
     public CourseResponse createCourse(@Valid @RequestBody CourseRequest course) {
         return courseService.createCourse(course);
     }
+
+    @PutMapping("/courses/{id}")
+    public CourseResponse updateCourse(@PathVariable Long id,@Valid @RequestBody CourseUpdateRequest course) {
+
+        return courseService.updateCourse(id, course);
+    }
     
     //Borrar un curso
     @DeleteMapping("/courses/{id}")
@@ -138,8 +150,39 @@ public class CampusController {
         return courseService.deleteCourse(id);
     }
     
+    //Inscripciones
 
+    //Obtener todas las inscripciones
+    @GetMapping("/enrollments")
+    public List<EnrollmentResponse> getAllEnrollments() {
+        return enrollmentService.getAllEnrollments();
+    }
+
+    //Obtener inscripción por ID
+    @GetMapping("/enrollments/{id}")
+    public EnrollmentResponse getEnrollmentById(@PathVariable Long id) {
+        return enrollmentService.getEnrollmentById(id);
+    }
+
+    //Crear inscripción
+    @PostMapping("/enrollments")
+    public EnrollmentResponse createEnrollments(@RequestBody EnrollmentRequest enrollment) {
+
+        return enrollmentService.createEnrollment(enrollment);
+    }
     
+    //Actualizar estado de inscripción
+    @PutMapping("/enrollments/{id}")
+    public EnrollmentResponse updateEnrollment(@PathVariable Long id,@Valid @RequestBody EnrollmentUpdateRequest status) {
+        
+        return enrollmentService.updateEnrollment(id, status);
+    }
+
+    //Cancelar inscripción
+    @DeleteMapping("/enrollments/{id}")
+    public EnrollmentResponse cancelEnrollment(@PathVariable Long id){
+        return enrollmentService.cancelEnrollment(id);
+    }
     
 }
     

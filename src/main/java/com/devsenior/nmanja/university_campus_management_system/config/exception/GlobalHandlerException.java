@@ -9,6 +9,9 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import com.devsenior.nmanja.university_campus_management_system.exceptions.EntityNotFoundException;
+import com.devsenior.nmanja.university_campus_management_system.exceptions.StatusNotValidException;
+import com.devsenior.nmanja.university_campus_management_system.exceptions.CourseFullException;
+import com.devsenior.nmanja.university_campus_management_system.exceptions.CourseWithoutStudentsException;
 import com.devsenior.nmanja.university_campus_management_system.exceptions.EntityNotExistException;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -38,6 +41,42 @@ public class GlobalHandlerException {
             request.getRequestURI());
 
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
+    }
+
+    //El curso ya está lleno
+    @ExceptionHandler(CourseFullException.class)
+    public ResponseEntity<ApiErrorResponse> handleCourseFullException(CourseFullException ex, HttpServletRequest request){
+
+        var errorResponse = new ApiErrorResponse(
+            HttpStatus.CONFLICT, 
+            ex.getMessage(), 
+            request.getRequestURI());
+
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(errorResponse);
+
+    }
+
+    @ExceptionHandler(CourseWithoutStudentsException.class)
+    public ResponseEntity<ApiErrorResponse> handleCourseWithoutStudentsException(CourseWithoutStudentsException ex, HttpServletRequest request){
+
+        var errorResponse = new ApiErrorResponse(
+            HttpStatus.CONFLICT, 
+            ex.getMessage(), 
+            request.getRequestURI());
+
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(errorResponse);
+
+    }
+
+    @ExceptionHandler(StatusNotValidException.class)
+    public ResponseEntity<ApiErrorResponse> handleStatusNotValidException(StatusNotValidException ex, HttpServletRequest request){
+
+        var errorResponse = new ApiErrorResponse(
+            HttpStatus.CONFLICT, 
+            ex.getMessage(),
+            request.getRequestURI());
+
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(errorResponse);
     }
     
     //Formato invalido
