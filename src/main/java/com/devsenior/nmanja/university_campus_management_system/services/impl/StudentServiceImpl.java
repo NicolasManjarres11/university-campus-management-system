@@ -2,17 +2,22 @@ package com.devsenior.nmanja.university_campus_management_system.services.impl;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.devsenior.nmanja.university_campus_management_system.exceptions.EntityNotFoundException;
+import com.devsenior.nmanja.university_campus_management_system.exceptions.UserAlreadyExist;
 import com.devsenior.nmanja.university_campus_management_system.exceptions.EntityNotExistException;
 import com.devsenior.nmanja.university_campus_management_system.helper.UpdateHelper;
 import com.devsenior.nmanja.university_campus_management_system.mappers.StudentMapper;
 import com.devsenior.nmanja.university_campus_management_system.model.dto.StudentRequest;
 import com.devsenior.nmanja.university_campus_management_system.model.dto.StudentResponse;
 import com.devsenior.nmanja.university_campus_management_system.model.dto.StudentUpdateRequest;
+import com.devsenior.nmanja.university_campus_management_system.model.entities.User;
 import com.devsenior.nmanja.university_campus_management_system.repositories.StudentRepository;
+import com.devsenior.nmanja.university_campus_management_system.repositories.UserRepository;
 import com.devsenior.nmanja.university_campus_management_system.services.StudentService;
 
 import lombok.RequiredArgsConstructor;
@@ -24,6 +29,10 @@ public class StudentServiceImpl implements StudentService{
     private final StudentRepository studentRepository;
     
     private final StudentMapper studentMapper;
+
+    private final UserRepository userRepository;
+
+    private final PasswordEncoder passwordEncoder;
 
     //Obtener todos los estudiantes
     @Override
@@ -57,10 +66,24 @@ public class StudentServiceImpl implements StudentService{
 
     @Override
     public StudentResponse createStudent(StudentRequest student) {
+
+        if(userRepository.existsByUsername(student.username())){
+
+            throw new UserAlreadyExist(student.username());
+        }
+
+        var user = new User();
+
+        user.setUsername(student.username());
+        user.setPassword(passwordEncoder.encode(student.password()));
+        user.setRoles(Set.of("ROLE_STUDENT"));
+        user = userRepository.save(user);
         
         var entity = studentMapper.toEntity(student);
 
         entity.setEnrollments(new ArrayList<>()); //Guardamos con una lista vacia con el fin de no devolver un valor nulo
+        entity.setUser(user);
+
 
         studentRepository.save(entity);
 

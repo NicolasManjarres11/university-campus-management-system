@@ -14,11 +14,17 @@ public record StudentRequest(
         regexp = "^[a-zA-Z0-9._%+-]+@devsenior\\.edu\\.co$",
         message = "El correo no tiene un formato valido 'usuario@devsenior.edu.co'"
         )
-    @NotBlank(message = "El correo del estudiante es obligatorio")
+    @NotBlank(message = "El correo del estudiante es obligatorio.")
     String email,
 
-    @NotBlank(message = "El número del estudiante es obligatorio")
-    String studentNumber
+    @NotBlank(message = "El número del estudiante es obligatorio.")
+    String studentNumber,
+
+    @NotBlank(message = "El 'username'  es obligatorio.")
+    String username,
+
+    @NotBlank(message = "La contraseña es obligatoria.")
+    String password
 
 
 ) {
