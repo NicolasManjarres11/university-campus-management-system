@@ -2,6 +2,7 @@ package com.devsenior.nmanja.university_campus_management_system.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -21,6 +22,8 @@ public class SecurityConfig {
             .cors(cors -> cors.disable())
             .authorizeHttpRequests(authz -> authz
             .requestMatchers("/authenticate").permitAll()
+            .requestMatchers(HttpMethod.GET, "/api/campus/students").hasRole("ADMIN")
+            .requestMatchers(HttpMethod.GET, "/api/campus/students/**").hasAnyRole("ADMIN","STUDENT")
                     .anyRequest().authenticated())
                 .addFilterBefore(authenticationFilter,UsernamePasswordAuthenticationFilter.class);
                     

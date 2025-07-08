@@ -8,7 +8,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.devsenior.nmanja.university_campus_management_system.exceptions.EntityNotFoundException;
-import com.devsenior.nmanja.university_campus_management_system.exceptions.UserAlreadyExist;
+import com.devsenior.nmanja.university_campus_management_system.exceptions.UserAlreadyExistException;
 import com.devsenior.nmanja.university_campus_management_system.exceptions.EntityNotExistException;
 import com.devsenior.nmanja.university_campus_management_system.helper.UpdateHelper;
 import com.devsenior.nmanja.university_campus_management_system.mappers.StudentMapper;
@@ -58,6 +58,7 @@ public class StudentServiceImpl implements StudentService{
 
         var student = studentRepository.findById(id)
             .orElseThrow(() -> new EntityNotFoundException(id,"estudiante"));
+
         
         return studentMapper.toResponse(student);
     }
@@ -69,7 +70,7 @@ public class StudentServiceImpl implements StudentService{
 
         if(userRepository.existsByUsername(student.username())){
 
-            throw new UserAlreadyExist(student.username());
+            throw new UserAlreadyExistException(student.username());
         }
 
         var user = new User();

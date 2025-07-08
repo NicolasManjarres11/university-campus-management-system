@@ -25,6 +25,9 @@ import com.devsenior.nmanja.university_campus_management_system.services.Student
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -49,19 +52,41 @@ public class CampusController {
     //Estudiantes
 
     //Obtener todos los estudiantes
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/students")
     public List<StudentResponse> getAllStudents() {
         return studentService.getAllStudents();
     }
 
     //Obtener estudiante por ID
+
     @GetMapping("/students/{id}")
-    public StudentResponse getStudentById(@PathVariable Long id) {
+    public StudentResponse getStudentById(@PathVariable Long id, Authentication auth) {
+
+/*         String username = auth.getName(); //Obtenemos el username de la autenticación
+
+        var roles = auth.getAuthorities().stream()
+                    .map(a -> a.getAuthority())
+                    .toList();
+        if(roles.contains("ROLE_ADMIN")){
+            return studentService.getStudentById(id);
+        }
+
+        StudentResponse student = studentService.getStudentById(id);
+        if (student.user() == null || !student.user().username().equals(username)) {
+            throw new AccessDeniedException("No tienes permiso para ver este estudiante");
+        }
+    
+        return student; */
+
         return studentService.getStudentById(id);
+
+        
     }
 
     //Registrar un estudiante
     @PostMapping("/students")
+    @PreAuthorize("hasRole('ADMIN')")
     public StudentResponse createStudent(@Valid @RequestBody StudentRequest student) {        
         return studentService.createStudent(student);
     }
@@ -74,6 +99,7 @@ public class CampusController {
     }
     
     //Eliminar un estudiante
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/students/{id}")
     public StudentResponse deleteStudent(@PathVariable Long id){
         return studentService.deleteStudent(id);
