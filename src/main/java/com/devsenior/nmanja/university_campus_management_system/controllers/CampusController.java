@@ -25,6 +25,9 @@ import com.devsenior.nmanja.university_campus_management_system.services.Student
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -49,15 +52,22 @@ public class CampusController {
     //Estudiantes
 
     //Obtener todos los estudiantes
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/students")
     public List<StudentResponse> getAllStudents() {
         return studentService.getAllStudents();
     }
 
     //Obtener estudiante por ID
+
     @GetMapping("/students/{id}")
-    public StudentResponse getStudentById(@PathVariable Long id) {
-        return studentService.getStudentById(id);
+    public StudentResponse getStudentById(@PathVariable Long id, Authentication auth) {
+
+        var username = auth.getName();
+
+        return studentService.getStudentById(id,username);
+
+        
     }
 
     //Registrar un estudiante
@@ -68,12 +78,18 @@ public class CampusController {
 
     //Actualizar un estudiante
     @PutMapping("/students/{id}")
-    public StudentResponse updateStudent(@PathVariable Long id,@Valid @RequestBody StudentUpdateRequest student) {
+    public StudentResponse updateStudent(@PathVariable Long id,@Valid @RequestBody StudentUpdateRequest student, Authentication auth) {
+
+        var username = auth.getName();
+        var roles = auth.getAuthorities().stream()
+                    .map(a -> a.getAuthority())
+                    .toList();
         
-        return studentService.updateStudent(id, student);
+        return studentService.updateStudent(id, student, username, roles);
     }
     
     //Eliminar un estudiante
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/students/{id}")
     public StudentResponse deleteStudent(@PathVariable Long id){
         return studentService.deleteStudent(id);

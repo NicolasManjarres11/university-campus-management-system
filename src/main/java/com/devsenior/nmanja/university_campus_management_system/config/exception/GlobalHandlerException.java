@@ -4,12 +4,14 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authorization.AuthorizationDeniedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import com.devsenior.nmanja.university_campus_management_system.exceptions.EntityNotFoundException;
 import com.devsenior.nmanja.university_campus_management_system.exceptions.StatusNotValidException;
+import com.devsenior.nmanja.university_campus_management_system.exceptions.UserAlreadyExistException;
 import com.devsenior.nmanja.university_campus_management_system.exceptions.CourseFullException;
 import com.devsenior.nmanja.university_campus_management_system.exceptions.CourseWithoutStudentsException;
 import com.devsenior.nmanja.university_campus_management_system.exceptions.EntityNotExistException;
@@ -56,6 +58,7 @@ public class GlobalHandlerException {
 
     }
 
+    //el curso no tiene estudiantes
     @ExceptionHandler(CourseWithoutStudentsException.class)
     public ResponseEntity<ApiErrorResponse> handleCourseWithoutStudentsException(CourseWithoutStudentsException ex, HttpServletRequest request){
 
@@ -68,6 +71,7 @@ public class GlobalHandlerException {
 
     }
 
+    //Estado no válido
     @ExceptionHandler(StatusNotValidException.class)
     public ResponseEntity<ApiErrorResponse> handleStatusNotValidException(StatusNotValidException ex, HttpServletRequest request){
 
@@ -91,17 +95,30 @@ public class GlobalHandlerException {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
     }
 
+        //Formato invalido
+        @ExceptionHandler(UserAlreadyExistException.class)
+        public ResponseEntity<ApiErrorResponse> handleUserAlreadyExistException(UserAlreadyExistException ex, HttpServletRequest request){
+    
+            var errorResponse = new ApiErrorResponse(
+                HttpStatus.CONFLICT,
+                ex.getMessage(), 
+                request.getRequestURI());
+    
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(errorResponse);
+        }
+
     //Datos duplicados
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ResponseEntity<ApiErrorResponse> handleDataIntegrityViolationException(DataIntegrityViolationException ex, HttpServletRequest request){
 
         String message ="";
 
+        
         if(ex.getMessage().contains("email")){
             message = "El correo ya se encuentra registrado";
-        } else if (ex.getMessage().contains("student_numbe")) {
+        } else if (ex.getMessage().contains("student_number")) {
             message = "El número de estudiante ya se encuentra registrado";
-        }
+        } 
 
         var errorResponse = new ApiErrorResponse(
             HttpStatus.CONFLICT, 
@@ -109,6 +126,45 @@ public class GlobalHandlerException {
             request.getRequestURI());
 
         return ResponseEntity.status(HttpStatus.CONFLICT).body(errorResponse);
+    }
+
+    //Acceso denegado
+
+    @ExceptionHandler(AuthorizationDeniedException.class)
+    public ResponseEntity<ApiErrorResponse> handleAuthorizationDeniedException(AuthorizationDeniedException ex, HttpServletRequest request){
+
+        var errorResponse = new ApiErrorResponse(
+            HttpStatus.FORBIDDEN, 
+            ex.getMessage(), 
+            request.getRequestURI());
+
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(errorResponse);
+
+    }
+
+    @ExceptionHandler(RuntimeException.class)
+    public ResponseEntity<ApiErrorResponse> handleRunTimeException(RuntimeException ex, HttpServletRequest request) {
+
+        var errorResponse = new ApiErrorResponse(
+            HttpStatus.INTERNAL_SERVER_ERROR,
+            ex.getMessage(), 
+            request.getRequestURI());
+
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
+    }
+
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ApiErrorResponse> handleException(Exception ex, HttpServletRequest request){
+
+        var errorResponse = new ApiErrorResponse(
+            HttpStatus.FORBIDDEN, 
+            "!Lo sentimos¡ Ha ocurrido un error inesperado, por favor inténtelo de nuevo más tarde", 
+            request.getRequestURI());
+
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(errorResponse);
+
+
     }
 
 }
