@@ -63,39 +63,29 @@ public class CampusController {
     @GetMapping("/students/{id}")
     public StudentResponse getStudentById(@PathVariable Long id, Authentication auth) {
 
-/*         String username = auth.getName(); //Obtenemos el username de la autenticación
+        var username = auth.getName();
 
-        var roles = auth.getAuthorities().stream()
-                    .map(a -> a.getAuthority())
-                    .toList();
-        if(roles.contains("ROLE_ADMIN")){
-            return studentService.getStudentById(id);
-        }
-
-        StudentResponse student = studentService.getStudentById(id);
-        if (student.user() == null || !student.user().username().equals(username)) {
-            throw new AccessDeniedException("No tienes permiso para ver este estudiante");
-        }
-    
-        return student; */
-
-        return studentService.getStudentById(id);
+        return studentService.getStudentById(id,username);
 
         
     }
 
     //Registrar un estudiante
     @PostMapping("/students")
-    @PreAuthorize("hasRole('ADMIN')")
     public StudentResponse createStudent(@Valid @RequestBody StudentRequest student) {        
         return studentService.createStudent(student);
     }
 
     //Actualizar un estudiante
     @PutMapping("/students/{id}")
-    public StudentResponse updateStudent(@PathVariable Long id,@Valid @RequestBody StudentUpdateRequest student) {
+    public StudentResponse updateStudent(@PathVariable Long id,@Valid @RequestBody StudentUpdateRequest student, Authentication auth) {
+
+        var username = auth.getName();
+        var roles = auth.getAuthorities().stream()
+                    .map(a -> a.getAuthority())
+                    .toList();
         
-        return studentService.updateStudent(id, student);
+        return studentService.updateStudent(id, student, username, roles);
     }
     
     //Eliminar un estudiante

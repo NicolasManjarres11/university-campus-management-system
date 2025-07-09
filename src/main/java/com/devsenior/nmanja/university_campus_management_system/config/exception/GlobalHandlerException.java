@@ -58,6 +58,7 @@ public class GlobalHandlerException {
 
     }
 
+    //el curso no tiene estudiantes
     @ExceptionHandler(CourseWithoutStudentsException.class)
     public ResponseEntity<ApiErrorResponse> handleCourseWithoutStudentsException(CourseWithoutStudentsException ex, HttpServletRequest request){
 
@@ -70,6 +71,7 @@ public class GlobalHandlerException {
 
     }
 
+    //Estado no válido
     @ExceptionHandler(StatusNotValidException.class)
     public ResponseEntity<ApiErrorResponse> handleStatusNotValidException(StatusNotValidException ex, HttpServletRequest request){
 

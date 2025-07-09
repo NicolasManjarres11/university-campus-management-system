@@ -21,9 +21,15 @@ public class SecurityConfig {
             .csrf(csrf -> csrf.disable())
             .cors(cors -> cors.disable())
             .authorizeHttpRequests(authz -> authz
+
+            //Acceso a los métodos HTTP para la parte de estudiantes
+
             .requestMatchers("/authenticate").permitAll()
             .requestMatchers(HttpMethod.GET, "/api/campus/students").hasRole("ADMIN")
             .requestMatchers(HttpMethod.GET, "/api/campus/students/**").hasAnyRole("ADMIN","STUDENT")
+            .requestMatchers(HttpMethod.POST, "/api/campus/students").hasRole("ADMIN")
+            .requestMatchers(HttpMethod.PUT, "/api/campus/students/**").hasAnyRole("ADMIN","STUDENT")
+            .requestMatchers(HttpMethod.DELETE, "/api/campus/students/**").hasRole("ADMIN")
                     .anyRequest().authenticated())
                 .addFilterBefore(authenticationFilter,UsernamePasswordAuthenticationFilter.class);
                     
