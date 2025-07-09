@@ -101,6 +101,7 @@ public class CampusController {
 
     //Obtener todos los profesores
 
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/professors")
     public List<ProfessorResponse> getAllProfessors() {
         return professorService.getAllProfessors();
@@ -108,12 +109,15 @@ public class CampusController {
 
     //Obtener profesor por ID
 
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/professors/{id}")
     public ProfessorResponse getProfessorById(@PathVariable Long id) {
         return professorService.getProfessorById(id);
     }
 
     //Crear profesor
+
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/professors")
     public ProfessorResponse createProfessor(@Valid @RequestBody ProfessorRequest professor) {
 
@@ -121,6 +125,8 @@ public class CampusController {
     }
 
     //Actualizar profesor
+
+    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/professors/{id}")
     public ProfessorResponse updateProfessor(@PathVariable Long id, @Valid @RequestBody ProfessorUpdateRequest professor) {
         
@@ -128,6 +134,8 @@ public class CampusController {
     }
 
     //Eliminar profesor
+
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/professors/{id}")
     public ProfessorResponse deleteProfessor(@PathVariable Long id){
         return professorService.deleteProfessor(id);

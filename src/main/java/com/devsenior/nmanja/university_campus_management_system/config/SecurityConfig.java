@@ -39,6 +39,11 @@ public class SecurityConfig {
             .requestMatchers(HttpMethod.PUT, "/api/campus/courses/**").hasRole("ADMIN")
             .requestMatchers(HttpMethod.DELETE, "/api/campus/courses/**").hasRole("ADMIN")
 
+            //Acceso a los métodos HTTP para la parte de profesores
+
+            .requestMatchers("/api/campus/professors").hasRole("ADMIN")
+            .requestMatchers("/api/campus/professors/**").hasRole("ADMIN")
+
 
 
 
