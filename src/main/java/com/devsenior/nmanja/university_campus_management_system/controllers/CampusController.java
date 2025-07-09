@@ -149,11 +149,14 @@ public class CampusController {
     }
 
     //Crear un curso
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/courses")
     public CourseResponse createCourse(@Valid @RequestBody CourseRequest course) {
         return courseService.createCourse(course);
     }
 
+
+    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/courses/{id}")
     public CourseResponse updateCourse(@PathVariable Long id,@Valid @RequestBody CourseUpdateRequest course) {
 
@@ -161,6 +164,7 @@ public class CampusController {
     }
     
     //Borrar un curso
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/courses/{id}")
     public CourseResponse deleteCourse(@PathVariable Long id){
         return courseService.deleteCourse(id);

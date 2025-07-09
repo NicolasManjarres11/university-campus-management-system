@@ -1,5 +1,8 @@
 package com.devsenior.nmanja.university_campus_management_system.model.dto;
 
+
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.Pattern;
 
@@ -24,7 +27,7 @@ public record CourseUpdateRequest(
     @Min(value = 0)
     Integer studentsInCourse,
 
-
+    @JsonProperty(namespace = "professor")
     Long professorId
 ) {
     

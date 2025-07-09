@@ -30,6 +30,18 @@ public class SecurityConfig {
             .requestMatchers(HttpMethod.POST, "/api/campus/students").hasRole("ADMIN")
             .requestMatchers(HttpMethod.PUT, "/api/campus/students/**").hasAnyRole("ADMIN","STUDENT")
             .requestMatchers(HttpMethod.DELETE, "/api/campus/students/**").hasRole("ADMIN")
+
+            //Acceso a los métodos HTTP para la parte de estudiantes
+
+            .requestMatchers(HttpMethod.GET, "/api/campus/courses").hasAnyRole("ADMIN","STUDENT")
+            .requestMatchers(HttpMethod.GET, "/api/campus/courses/**").hasAnyRole("ADMIN","STUDENT")
+            .requestMatchers(HttpMethod.POST, "/api/campus/courses").hasRole("ADMIN")
+            .requestMatchers(HttpMethod.PUT, "/api/campus/courses/**").hasRole("ADMIN")
+            .requestMatchers(HttpMethod.DELETE, "/api/campus/courses/**").hasRole("ADMIN")
+
+
+
+
                     .anyRequest().authenticated())
                 .addFilterBefore(authenticationFilter,UsernamePasswordAuthenticationFilter.class);
                     
