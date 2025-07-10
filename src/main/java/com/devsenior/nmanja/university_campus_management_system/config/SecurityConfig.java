@@ -44,6 +44,13 @@ public class SecurityConfig {
             .requestMatchers("/api/campus/professors").hasRole("ADMIN")
             .requestMatchers("/api/campus/professors/**").hasRole("ADMIN")
 
+            //Acceso a los métodos HTTP para la parte de inscripcions
+
+            .requestMatchers(HttpMethod.GET, "/api/campus/enrollments").hasRole("ADMIN")
+            .requestMatchers(HttpMethod.GET, "/api/campus/enrollments/**").hasRole("ADMIN")
+            .requestMatchers(HttpMethod.POST, "/api/campus/enrollments").hasAnyRole("ADMIN","STUDENT")
+            .requestMatchers(HttpMethod.PUT, "/api/campus/enrollments/**").hasRole("ADMIN")
+            .requestMatchers(HttpMethod.DELETE, "/api/campus/enrollments/**").hasAnyRole("ADMIN","STUDENT")
 
 
 

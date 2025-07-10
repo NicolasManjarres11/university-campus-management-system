@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authorization.AuthorizationDeniedException;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -27,59 +29,56 @@ import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 @Service
-public class StudentServiceImpl implements StudentService{
+public class StudentServiceImpl implements StudentService {
 
     private final StudentRepository studentRepository;
-    
+
     private final StudentMapper studentMapper;
 
     private final UserRepository userRepository;
 
     private final PasswordEncoder passwordEncoder;
 
-    //Obtener todos los estudiantes
+    // Obtener todos los estudiantes
     @Override
     public List<StudentResponse> getAllStudents() {
 
         var entity = studentRepository.findAll();
 
-        if(entity.isEmpty()){
+        if (entity.isEmpty()) {
             throw new EntityNotExistException("estudiantes");
         }
 
         var response = entity.stream()
-            .map(s -> studentMapper.toResponse(s))
-            .toList();
+                .map(s -> studentMapper.toResponse(s))
+                .toList();
 
         return response;
     }
 
-    //Obtener estudiante por ID
+    // Obtener estudiante por ID
 
     @Override
     public StudentResponse getStudentById(Long id, String username) {
-        
-
 
         var student = studentRepository.findById(id)
-            .orElseThrow(() -> new EntityNotFoundException(id,"estudiante"));
+                .orElseThrow(() -> new EntityNotFoundException(id, "estudiante"));
 
         var user = findByUserUsername(username);
 
-        if(!user.getId().equals(id)){
+        if (!user.getId().equals(id)) {
             throw new AuthorizationDeniedException("No tienes permiso para ver este estudiante");
         }
 
-        
         return studentMapper.toResponse(student);
     }
 
-    //Registrar un nuevo estudiante
+    // Registrar un nuevo estudiante
 
     @Override
     public StudentResponse createStudent(StudentRequest student) {
 
-        if(userRepository.existsByUsername(student.username())){
+        if (userRepository.existsByUsername(student.username())) {
 
             throw new UserAlreadyExistException(student.username());
         }
@@ -90,42 +89,41 @@ public class StudentServiceImpl implements StudentService{
         user.setPassword(passwordEncoder.encode(student.password()));
         user.setRoles(Set.of("ROLE_STUDENT"));
         user = userRepository.save(user);
-        
+
         var entity = studentMapper.toEntity(student);
 
-        entity.setEnrollments(new ArrayList<>()); //Guardamos con una lista vacia con el fin de no devolver un valor nulo
+        entity.setEnrollments(new ArrayList<>()); // Guardamos con una lista vacia con el fin de no devolver un valor
+                                                  // nulo
         entity.setUser(user);
-
 
         studentRepository.save(entity);
 
         return studentMapper.toResponse(entity);
     }
 
-    //Actualizar un estudiante
+    // Actualizar un estudiante
     @Override
     public StudentResponse updateStudent(Long id, StudentUpdateRequest student, String username, List<String> roles) {
 
         var entityOptional = studentRepository.findById(id)
-        .orElseThrow(() -> new EntityNotFoundException(id,"estudiante"));
+                .orElseThrow(() -> new EntityNotFoundException(id, "estudiante"));
 
-        //Actualización por parte del administrador
+        // Actualización por parte del administrador
 
-        if(roles.contains("ROLE_ADMIN")){
+        if (roles.contains("ROLE_ADMIN")) {
 
             UpdateHelper.updateIfNotNull(entityOptional, student);
 
             var updateEntity = studentRepository.save(entityOptional);
-    
-    
+
             return studentMapper.toResponse(updateEntity);
-            
+
         }
 
-        //Actualización por parte del estudiante
+        // Actualización por parte del estudiante
         var user = findByUserUsername(username);
 
-        if(!user.getId().equals(id)){
+        if (!user.getId().equals(id)) {
             throw new AuthorizationDeniedException("No tienes permiso para actualizar este estudiante");
         }
 
@@ -133,34 +131,44 @@ public class StudentServiceImpl implements StudentService{
 
         var updateEntity = studentRepository.save(entityOptional);
 
-
         return studentMapper.toResponse(updateEntity);
     }
 
-
-    //Eliminar un estudiante
+    // Eliminar un estudiante
     @Override
     public StudentResponse deleteStudent(Long id) {
         var entityOptional = studentRepository.findById(id)
-        .orElseThrow(() -> new EntityNotFoundException(id,"estudiante"));
-
+                .orElseThrow(() -> new EntityNotFoundException(id, "estudiante"));
 
         studentRepository.deleteById(id);
 
         return studentMapper.toResponse(entityOptional);
     }
 
-    
-    //Buscar estudiante por username
+    // Buscar estudiante por username
 
     @Override
     public Student findByUserUsername(String username) {
 
-        return studentRepository.findByUserUsername(username).
-        orElseThrow(() -> new EntityNotFoundException("No se encontró estudiante con el usuario: "+username));
+        return studentRepository.findByUserUsername(username).orElseThrow(
+                () -> new EntityNotFoundException("No se encontró estudiante con el usuario: " + username));
     }
-    
 
+    // PAginación y filtrado
 
-    
+    @Override
+    public Page<StudentResponse> getAllStudentsWithFilters(Pageable pageable, String name, String email,
+            String studentNumber) {
+
+        Page<Student> students = studentRepository.findAllWithFilters(
+                pageable, name, email, studentNumber);
+
+        if (students.isEmpty()) {
+            throw new EntityNotExistException("estudiantes");
+        }
+
+        return students.map(studentMapper::toResponse);
+
+    }
+
 }

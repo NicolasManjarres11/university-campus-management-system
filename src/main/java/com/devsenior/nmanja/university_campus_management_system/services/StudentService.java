@@ -2,6 +2,9 @@ package com.devsenior.nmanja.university_campus_management_system.services;
 
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+
 import com.devsenior.nmanja.university_campus_management_system.model.dto.StudentRequest;
 import com.devsenior.nmanja.university_campus_management_system.model.dto.StudentResponse;
 import com.devsenior.nmanja.university_campus_management_system.model.dto.StudentUpdateRequest;
@@ -25,5 +28,13 @@ public interface StudentService {
 
     //Buscar por usuario de estudiante
     Student findByUserUsername(String username);
+
+    //Paginación y filtrado
+
+    Page<StudentResponse> getAllStudentsWithFilters(
+        Pageable pageable, 
+        String name, 
+        String email, 
+        String studentNumber);
 
 }

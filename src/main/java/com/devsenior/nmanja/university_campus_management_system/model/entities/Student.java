@@ -32,7 +32,7 @@ public class Student {
     private String email;
 
     @Column(unique = true, nullable = false)
-    private String StudentNumber;
+    private String studentNumber;
 
     //Relación de uno a muchos
     //Un estudiante puede tener varias inscripciones

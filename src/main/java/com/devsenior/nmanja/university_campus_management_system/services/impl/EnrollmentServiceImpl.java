@@ -3,6 +3,7 @@ package com.devsenior.nmanja.university_campus_management_system.services.impl;
 import java.time.LocalDate;
 import java.util.List;
 
+import org.springframework.security.authorization.AuthorizationDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,7 +26,7 @@ import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 @Service
-public class EnrollmentServiceImpl implements EnrollmentService{
+public class EnrollmentServiceImpl implements EnrollmentService {
 
     private final EnrollmentRepository enrollmentRepository;
     private final EnrollmentMapper enrollmentMapper;
@@ -39,7 +40,7 @@ public class EnrollmentServiceImpl implements EnrollmentService{
     public List<EnrollmentResponse> getAllEnrollments() {
 
         var entity = enrollmentRepository.findAll();
-        
+
         if (entity.isEmpty()) {
             throw new EntityNotExistException("inscripciones");
         }
@@ -54,47 +55,77 @@ public class EnrollmentServiceImpl implements EnrollmentService{
     @Override
     public EnrollmentResponse getEnrollmentById(Long id) {
         var entityOptional = enrollmentRepository.findById(id)
-            .orElseThrow(() -> new EntityNotFoundException(id, "inscripción"));
-
+                .orElseThrow(() -> new EntityNotFoundException(id, "inscripción"));
 
         return enrollmentMapper.toResponse(entityOptional);
     }
 
     @Transactional
     @Override
-    public EnrollmentResponse createEnrollment(EnrollmentRequest enrollment) {
-        
-        var entity = enrollmentMapper.toEntity(enrollment);
+    public EnrollmentResponse createEnrollment(EnrollmentRequest enrollment, String username, List<String> roles) {
+
+
+        //Validamos que el estudiante exista
 
         var student = studentRepository.findById(enrollment.studentId())
-                        .orElseThrow(() -> new EntityNotFoundException(enrollment.studentId(), "estudiante"));
+                .orElseThrow(() -> new EntityNotFoundException(enrollment.studentId(), "estudiante"));
 
-        var course = courseRepository.findById(enrollment.courseId())
-                        .orElseThrow(() -> new EntityNotFoundException(enrollment.courseId(), "curso"));
 
-        if (enrollmentRepository.existsByStudentIdAndCourseId(enrollment.studentId(), enrollment.courseId())) {
-                            throw new StudentAlreadyEnrolled(enrollment.studentId());
+        //Revisamos si el usuario es ADMIN o no
+
+        if (!roles.contains("ROLE_ADMIN")) {
+
+            //Si no es administrador, se busca el estudiante con este username
+
+            var user = studentRepository.findByUserUsername(username)
+                    .orElseThrow(() -> new EntityNotFoundException("No se encontró el usuario: " + username));
+
+            //Si el ID del usuario no coincide con el ID relacionado en el request, se prohibe la acción de inscripción
+
+            if (!user.getId().equals(enrollment.studentId())) {
+
+                throw new AuthorizationDeniedException("No tienes permiso para realizar esta operación.");
+
+            }
+
         }
 
-        courseService.incrementStudentsInCourse(course.getId());
+        //Validamos que el curso exista
+        
 
+        var course = courseRepository.findById(enrollment.courseId())
+                .orElseThrow(() -> new EntityNotFoundException(enrollment.courseId(), "curso"));
+
+        //Revisamos si el usuario ya está inscrito en el curso
+
+        if (enrollmentRepository.existsByStudentIdAndCourseId(enrollment.studentId(), enrollment.courseId())) {
+            throw new StudentAlreadyEnrolled(enrollment.studentId());
+        }
+        
+        //Si pasa todos los filtros, se procede a crear la inscripción
+
+        var entity = enrollmentMapper.toEntity(enrollment);
         entity.setStudent(student);
         entity.setCourse(course);
         entity.setInscriptionDate(LocalDate.now());
         entity.setStatus(EnrollmentStatus.ACTIVO);
 
-        enrollmentRepository.save(entity);
+       //Se incrementa contador de estudiantes en el curso
+        courseService.incrementStudentsInCourse(course.getId());
 
+        //Guardamos la inscripción en la BD
+        enrollmentRepository.save(entity);
         return enrollmentMapper.toResponse(entity);
+
     }
 
     @Transactional
     @Override
     public EnrollmentResponse updateEnrollment(Long id, EnrollmentUpdateRequest enrollment) {
 
-        var entityOptional = enrollmentRepository.findById(id).
-                            orElseThrow(() -> new EntityNotFoundException(id, "inscripción"));
-        //Guardamos el nuevo estado
+        var entityOptional = enrollmentRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException(id, "inscripción"));
+        // Guardamos el nuevo estado
         EnrollmentStatus newStatus;
 
         try {
@@ -103,59 +134,67 @@ public class EnrollmentServiceImpl implements EnrollmentService{
             throw new StatusNotValidException(enrollment.status());
         }
 
-        //El viejo estado lo obtenemos para validar
+        // El viejo estado lo obtenemos para validar
         var oldStatus = entityOptional.getStatus();
 
+        // Si el usuario actualiza con el estado ACTIVO a un curso que ya está ACTIVO,
+        // lo mismo con los demás estados
 
-        //Si el usuario actualiza con el estado ACTIVO a un curso que ya está ACTIVO, lo mismo con los demás estados
-
-        if(newStatus == oldStatus){
+        if (newStatus == oldStatus) {
             return enrollmentMapper.toResponse(entityOptional);
         }
 
-
-        if(oldStatus == EnrollmentStatus.ACTIVO && newStatus != EnrollmentStatus.ACTIVO){
+        if (oldStatus == EnrollmentStatus.ACTIVO && newStatus != EnrollmentStatus.ACTIVO) {
             courseService.decrementStudentsInCourse(entityOptional.getCourse().getId());
-        } else if (oldStatus != EnrollmentStatus.ACTIVO && newStatus == EnrollmentStatus.ACTIVO){
+        } else if (oldStatus != EnrollmentStatus.ACTIVO && newStatus == EnrollmentStatus.ACTIVO) {
             courseService.incrementStudentsInCourse(entityOptional.getCourse().getId());
         }
 
         entityOptional.setStatus(newStatus);
-        
+
         var updateEntity = enrollmentRepository.save(entityOptional);
-
-
 
         return enrollmentMapper.toResponse(updateEntity);
     }
 
-
     @Transactional
     @Override
-    public EnrollmentResponse cancelEnrollment(Long id) {
-        
+    public EnrollmentResponse cancelEnrollment(Long id, String username, List<String> roles) {
+
         var entityOptional = enrollmentRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(id, "inscripción"));
 
+
+        if(!roles.contains("ROLE_ADMIN")){
+
+            var user = studentRepository.findByUserUsername(username)
+            .orElseThrow(() -> new EntityNotFoundException("No se encontró estudiante con el usuario :" + username));
+
+            if (user.getId() != entityOptional.getStudent().getId()) {
+                throw new AuthorizationDeniedException("No tienes permisos para realizar esta acción.");
+            }
+
+        }
+
         var oldStatus = entityOptional.getStatus();
 
-        if(oldStatus == EnrollmentStatus.RETIRADO){
+        if (oldStatus == EnrollmentStatus.RETIRADO) {
             return enrollmentMapper.toResponse(entityOptional);
         }
 
-        if(oldStatus == EnrollmentStatus.COMPLETADO){
+        if (oldStatus == EnrollmentStatus.COMPLETADO) {
             throw new StatusNotValidException(id);
         }
 
-        if(oldStatus == EnrollmentStatus.ACTIVO){
+        if (oldStatus == EnrollmentStatus.ACTIVO) {
             courseService.decrementStudentsInCourse(entityOptional.getCourse().getId());
-        } 
+        }
 
         entityOptional.setStatus(EnrollmentStatus.RETIRADO);
 
         var updatedEntity = enrollmentRepository.save(entityOptional);
-        
+
         return enrollmentMapper.toResponse(updatedEntity);
     }
-    
+
 }
