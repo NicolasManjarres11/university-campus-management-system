@@ -12,10 +12,10 @@ public interface EnrollmentService {
 
     EnrollmentResponse getEnrollmentById(Long id);
 
-    EnrollmentResponse createEnrollment(EnrollmentRequest enrollment);
+    EnrollmentResponse createEnrollment(EnrollmentRequest enrollment, String username, List<String> roles);
 
     EnrollmentResponse updateEnrollment(Long id, EnrollmentUpdateRequest enrollment);
 
-    EnrollmentResponse cancelEnrollment(Long id);
+    EnrollmentResponse cancelEnrollment(Long id, String username, List<String> roles);
 
 }

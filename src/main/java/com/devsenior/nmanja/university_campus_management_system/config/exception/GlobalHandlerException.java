@@ -4,6 +4,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authorization.AuthorizationDeniedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -126,6 +127,21 @@ public class GlobalHandlerException {
             request.getRequestURI());
 
         return ResponseEntity.status(HttpStatus.CONFLICT).body(errorResponse);
+    }
+
+    //Credenciales inválidas
+
+    @ExceptionHandler(BadCredentialsException.class)
+    public ResponseEntity<ApiErrorResponse> handleBadCredentialsException(BadCredentialsException ex , HttpServletRequest request){
+
+        var errorResponse = new ApiErrorResponse(
+            HttpStatus.CONFLICT, 
+            ex.getMessage(), 
+            request.getRequestURI());
+
+        
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(errorResponse);
+
     }
 
     //Acceso denegado

@@ -83,6 +83,7 @@ public class CourseServiceImpl implements CourseService{
                     //Validamos primero que el id del profesor exista
         var professor = professorRepository.findById(course.professorId())
         .orElseThrow(() -> new EntityNotFoundException(course.professorId(), "profesor"));
+        
         entityOptional.setProfessor(professor);
         }
 
