@@ -24,6 +24,8 @@ public class SecurityConfig {
 
             //Acceso a los métodos HTTP para la parte de estudiantes
 
+            .requestMatchers("/swagger-ui/**").permitAll()
+            .requestMatchers("/v3/**").permitAll()
             .requestMatchers("/authenticate").permitAll()
             .requestMatchers(HttpMethod.GET, "/api/campus/students").hasRole("ADMIN")
             .requestMatchers(HttpMethod.GET, "/api/campus/students/**").hasAnyRole("ADMIN","STUDENT")
