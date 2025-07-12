@@ -81,12 +81,16 @@ public class CampusController {
     @ApiResponse(responseCode = "403", description = "No tienes permisos para realizar esta acción.")
     @ApiResponse(responseCode = "404", description = "No se encontró un estudiante con el ID relacionado.")
     @ResponseStatus(HttpStatus.OK)
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/students/{id}")
     public StudentResponse getStudentById(@PathVariable Long id, Authentication auth) {
 
         var username = auth.getName();
+        var roles = auth.getAuthorities().stream()
+            .map(a -> a.getAuthority())
+            .toList();
 
-        return studentService.getStudentById(id, username);
+        return studentService.getStudentById(id, username, roles);
 
     }
 

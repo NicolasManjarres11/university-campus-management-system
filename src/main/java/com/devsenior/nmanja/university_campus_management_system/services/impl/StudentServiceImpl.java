@@ -59,16 +59,23 @@ public class StudentServiceImpl implements StudentService {
     // Obtener estudiante por ID
 
     @Override
-    public StudentResponse getStudentById(Long id, String username) {
+    public StudentResponse getStudentById(Long id, String username, List<String> roles) {
+
+
+
+        if(!roles.contains("ROLE_ADMIN")){
+
+            var user = studentRepository.findByUserUsername(username)
+                .orElseThrow(() -> new EntityNotFoundException("No se encontró estudiante con el usuario: "+username));
+            
+            if(!user.getId().equals(id)){
+                throw new AuthorizationDeniedException("No tienes permiso para ver este estudiante");
+            }
+        }
 
         var student = studentRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(id, "estudiante"));
 
-        var user = findByUserUsername(username);
-
-        if (!user.getId().equals(id)) {
-            throw new AuthorizationDeniedException("No tienes permiso para ver este estudiante");
-        }
 
         return studentMapper.toResponse(student);
     }

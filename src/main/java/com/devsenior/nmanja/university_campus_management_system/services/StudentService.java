@@ -16,7 +16,7 @@ public interface StudentService {
     List<StudentResponse> getAllStudents();
 
     //Obtener estudiante por ID
-    StudentResponse getStudentById(Long id, String username);
+    StudentResponse getStudentById(Long id, String username, List<String> roles);
 
     StudentResponse createStudent(StudentRequest student);
 
