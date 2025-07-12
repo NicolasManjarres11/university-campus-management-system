@@ -226,4 +226,8 @@ La aplicación estará disponible en: `http://localhost:8080`
 
 ---
 
+<<<<<<< HEAD
 ⭐ Si este proyecto te ha sido útil, ¡no olvides darle una estrella!
+=======
+⭐ Si este proyecto te ha sido útil, ¡no olvides darle una estrella!
+>>>>>>> 32143917b7c4ca60aebf3760c6280fd3a2126b71
